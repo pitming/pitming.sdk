@@ -14,7 +14,8 @@ namespace cqrsLib
     public Task HandleCommandTask { get; private set; }
     public int? EntityId { get; private set; } //be sure entityId are nullable to avoid special init variable (like 0 for int)
 
-    public ManualResetEvent HandleCommandResetEvent { get; private set; } = new ManualResetEvent(false);
+    public AutoResetEvent HandleCommandResetEvent { get; private set; } = new AutoResetEvent(false);
+    //public ManualResetEvent HandleCommandResetEvent { get; private set; } = new ManualResetEvent(false);
 
     public CommandManager(IEnumerable<ICommandHandler> commandHandlers)
     {
@@ -22,9 +23,9 @@ namespace cqrsLib
     }
     public void HandleCommand(ICommand command)
     {
-      Console.WriteLine($"Locking for id:{command.CommandHeader.EntityId}");
-      HandleCommandResetEvent.Reset();
-      Console.WriteLine($"Locked for id:{command.CommandHeader.EntityId}");
+      Console.WriteLine($"{Thread.CurrentThread.ManagedThreadId}-Locking for id:{command.CommandHeader.EntityId}");
+      //HandleCommandResetEvent.Reset();
+      Console.WriteLine($"{Thread.CurrentThread.ManagedThreadId}-Locked for id:{command.CommandHeader.EntityId}");
       EntityId = command.CommandHeader.EntityId;
       HandleCommandTask = Task.Factory.StartNew(() =>
       {
@@ -37,9 +38,10 @@ namespace cqrsLib
         }
         finally
         {
-          Console.WriteLine($"Releasing for id:{command.CommandHeader.EntityId}");
+          Console.WriteLine($"{Thread.CurrentThread.ManagedThreadId}-Releasing for id:{command.CommandHeader.EntityId}");
+          EntityId = null;
           HandleCommandResetEvent.Set();
-          Console.WriteLine($"Released for id:{command.CommandHeader.EntityId}");
+          Console.WriteLine($"{Thread.CurrentThread.ManagedThreadId}-Released for id:{command.CommandHeader.EntityId}");
         }
       });
     }

@@ -42,9 +42,9 @@ namespace cqrsLib
                   var concurrentCommandManager = _commandManagers.FirstOrDefault(cm => cm.EntityId == command.CommandHeader.EntityId);
                   if (concurrentCommandManager != null)
                   {
-                    Console.WriteLine($"Id {command.CommandHeader.EntityId} in use. Waiting");
+                    Console.WriteLine($"{Thread.CurrentThread.ManagedThreadId}-Id {command.CommandHeader.EntityId} in use. Waiting");
                     concurrentCommandManager.HandleCommandResetEvent?.WaitOne();
-                    Console.WriteLine($"Id {command.CommandHeader.EntityId} no more in use. Resume");
+                    Console.WriteLine($"{Thread.CurrentThread.ManagedThreadId}-Id {command.CommandHeader.EntityId} no more in use. Resume");
                   }
                   commandManager.HandleCommand(command);
                 }
