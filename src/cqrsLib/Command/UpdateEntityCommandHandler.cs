@@ -1,5 +1,5 @@
 ﻿using System;
-//using Microsoft.AspNetCore.Mvc;
+using System.Threading;
 
 namespace cqrsLib.Command
 {
@@ -20,6 +20,7 @@ namespace cqrsLib.Command
     c =>
     {
       var updateEntity = Selector(c) as UpdateEntity;
+      Console.WriteLine($"{Thread.CurrentThread.ManagedThreadId}-Handle command:{this.GetType()} - {updateEntity.Id}/{updateEntity.Child}");
       var entity = _entityRepository.Get(updateEntity.Id);
       entity.Children.Add(updateEntity.Child);
       _entityRepository.Upsert(entity);

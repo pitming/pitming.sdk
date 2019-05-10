@@ -28,7 +28,7 @@ namespace UnitTestProject1
     }
 
     [TestMethod]
-    public void AssertOneHundredCreatedWithDifferentIdsMessageSucceed()
+    public void AssertLotsOfCreatedWithDifferentIdsMessageSucceed()
     {
       TestSettings.EntityRepository.Clear();
       TestSettings.CommandBus.Initialize();
@@ -37,7 +37,7 @@ namespace UnitTestProject1
       commandManager.Start();
 
       var ids = new List<int>();
-      for (var i = 1; i < 5; i++)
+      for (var i = 0; i < 20; i++)
         ids.Add(i);
 
       foreach (var id in ids)
@@ -53,7 +53,7 @@ namespace UnitTestProject1
     }
 
     [TestMethod]
-    public void Assert1CreateAnd10UpdatedSucceed()
+    public void Assert1CreateAndLotsUpdatedOnSameIdSucceed()
     {
       TestSettings.EntityRepository.Clear();
       TestSettings.CommandBus.Initialize();
