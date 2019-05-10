@@ -1,4 +1,5 @@
 ﻿using cqrsLib.Command;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -6,9 +7,14 @@ using System.Threading.Tasks;
 
 namespace cqrsLib
 {
-  public class CommandManager
+  public class CommandManager : IDisposable
   {
     private readonly IEnumerable<ICommandHandler> _commandHandlers;
+
+    public Task HandleCommandTask { get; private set; }
+    public int EntityId { get; private set; }
+
+    public AutoResetEvent HandleCommandResetEvent { get; private set; } = new AutoResetEvent(false);
 
     public CommandManager(IEnumerable<ICommandHandler> commandHandlers)
     {
@@ -16,16 +22,27 @@ namespace cqrsLib
     }
     public void HandleCommand(ICommand command)
     {
+      EntityId = command.CommandHeader.EntityId;
       HandleCommandTask = Task.Factory.StartNew(() =>
       {
-        foreach (var handler in _commandHandlers.Where(h => h.Selector(command) != null))
+        try
         {
-          System.Console.WriteLine($"{Thread.CurrentThread.ManagedThreadId}-Handle command:{handler.GetType()} - {command.CommandHeader.EntityId}");
-          handler.Do(command);
+          foreach (var handler in _commandHandlers.Where(h => h.Selector(command) != null))
+          {
+            System.Console.WriteLine($"{Thread.CurrentThread.ManagedThreadId}-Handle command:{handler.GetType()} - {command.CommandHeader.EntityId}");
+            handler.Do(command);
+          }
+        }
+        finally
+        {
+          HandleCommandResetEvent.Set();
         }
       });
     }
 
-    public Task HandleCommandTask { get; private set; }
+    public void Dispose()
+    {
+      HandleCommandResetEvent?.Dispose();
+    }
   }
 }

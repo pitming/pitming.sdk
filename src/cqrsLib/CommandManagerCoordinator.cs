@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace cqrsLib
 {
-  public class CommandManagerCoordinator
+  public class CommandManagerCoordinator : IDisposable
   {
     private readonly Bus<ICommand> _commandBus;
     private readonly List<CommandManager> _commandManagers = new List<CommandManager>();
     private readonly AutoResetEvent _commandBusEmptyResetEvent = new AutoResetEvent(false);
-    private const int NB_WORKER = 3;
+    private const int NB_WORKER = 1;
 
     public CommandManagerCoordinator(Bus<ICommand> commandBus, IEnumerable<ICommandHandler> commandHandlers)
     {
@@ -38,7 +38,11 @@ namespace cqrsLib
               {
                 var command = _commandBus.GetNextMessage();
                 if (command != null)
+                {
+                  var concurrentCommandManager = _commandManagers.FirstOrDefault(cm => cm.EntityId == command.CommandHeader.EntityId);
+                  concurrentCommandManager?.HandleCommandResetEvent?.WaitOne();
                   commandManager.HandleCommand(command);
+                }
               }
               catch { }
             }
@@ -56,6 +60,14 @@ namespace cqrsLib
     {
       _commandBus.Close();
       _commandBusEmptyResetEvent.WaitOne();
+    }
+
+    public void Dispose()
+    {
+      foreach (var cm in _commandManagers)
+        cm?.Dispose();
+
+      _commandBusEmptyResetEvent?.Dispose();
     }
   }
 }
