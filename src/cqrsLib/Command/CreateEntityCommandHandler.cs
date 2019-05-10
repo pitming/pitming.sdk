@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace cqrsLib.Command
 {
@@ -21,6 +22,7 @@ namespace cqrsLib.Command
       var createEntity = Selector(c) as CreateEntity;
       Console.WriteLine($"{Thread.CurrentThread.ManagedThreadId}-Handle command:{this.GetType()} - {createEntity.Id}");
       _entityRepository.Upsert(new Entity { Id = createEntity.Id });
+      Task.Delay(TimeSpan.FromMilliseconds(100)).Wait();
     };
   }
 }

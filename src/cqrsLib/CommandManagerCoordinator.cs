@@ -12,7 +12,7 @@ namespace cqrsLib
     private readonly Bus<ICommand> _commandBus;
     private readonly List<CommandManager> _commandManagers = new List<CommandManager>();
     private readonly AutoResetEvent _commandBusEmptyResetEvent = new AutoResetEvent(false);
-    private const int NB_WORKER = 1;
+    private const int NB_WORKER = 5;
 
     public CommandManagerCoordinator(Bus<ICommand> commandBus, IEnumerable<ICommandHandler> commandHandlers)
     {

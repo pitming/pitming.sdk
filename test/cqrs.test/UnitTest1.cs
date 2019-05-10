@@ -36,8 +36,10 @@ namespace UnitTestProject1
       var commandManager = TestSettings.CommandManagerCoordinator;
       commandManager.Start();
 
+      var nbCreate = 20;
+
       var ids = new List<int>();
-      for (var i = 0; i < 20; i++)
+      for (var i = 0; i < nbCreate; i++)
         ids.Add(i);
 
       foreach (var id in ids)
@@ -45,11 +47,10 @@ namespace UnitTestProject1
 
       commandManager.Stop();
 
-      ids.Select(id =>
+      for (var i = 0; i < nbCreate; i++)
       {
-        Assert.AreEqual(id, TestSettings.EntityRepository.Get(id)?.Id);
-        return true;
-      }).ToList();
+        Assert.AreEqual(i, TestSettings.EntityRepository.Get(i)?.Id);
+      }
     }
 
     [TestMethod]
