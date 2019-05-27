@@ -5,11 +5,14 @@ namespace WebApplication1.Controllers
   public interface IStorageRepository
   {
     Task<Access> GetAccessAsync(string id);
+    Task DeleteAsync(string accessId);
+    Task CreateAsync(Access access);
   }
 
-  public class Storage
+  public class StorageIn
   {
     public string Id { get; set; }
+    public string[] AccessIds { get; set; }
     public Access[] Accesses { get; set; }
 
   }

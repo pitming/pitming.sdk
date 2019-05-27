@@ -1,11 +1,18 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace WebApplication1.Controllers
 {
+  public class StorageController : Controller
+  {
+    private readonly IStorageRepository _storageRepository;
+
+    public StorageController(IStorageRepository storageRepository)
+    {
+      _storageRepository = storageRepository;
+    }
+  }
+
   public class AccessController : Controller
   {
     private readonly IStorageRepository _storageRepository;
@@ -14,6 +21,7 @@ namespace WebApplication1.Controllers
     {
       _storageRepository = storageRepository;
     }
+
     public async Task<IActionResult> Get(string id)
     {
       var storage = await _storageRepository.GetAccessAsync(id);
@@ -21,52 +29,17 @@ namespace WebApplication1.Controllers
         return NotFound();
       return Ok(storage);
     }
-  }
 
-  public static class TypeDictionnary
-  {
-    private static readonly Dictionary<string, Tuple<string, string>[]> _dic;
-
-    static TypeDictionnary()
+    public async Task<IActionResult> Create(Access access)
     {
-      _dic = new Dictionary<string, Tuple<string, string>[]>
-      {
-        { "Nearline", new[] { Tuple.Create("Samba",(string)null) } },
-        { "Avid", new[] { Tuple.Create("Nexis", "Avid") } }
-      };
+      await _storageRepository.CreateAsync(access);
+      return Created(string.Empty, access.Id);
     }
 
-    public static string[] GetDestinationTypes()
+    public async Task<IActionResult> Delete(string accessId)
     {
-      return _dic.Keys.ToArray();
-    }
-
-    public static string[] GetStorageType(string destinationType)
-    {
-      var tuple = _dic.GetValueOrDefault(destinationType);
-      if (tuple == null)
-        return new string[0];
-      return tuple.Select(t => t.Item1).ToArray();
-    }
-  }
-
-  public class DestinationTypeController : Controller
-  {
-    public IActionResult Get()
-    {
-
-      return base.Ok(TypeDictionnary.GetDestinationTypes());
-    }
-  }
-
-  public class AccessTypeController : Controller
-  {
-    public IActionResult Get(string destinationType)
-    {
-      var accessType = TypeDictionnary.GetStorageType(destinationType);
-      if (accessType == null)
-        return NotFound();
-      return Ok(accessType);
+      await _storageRepository.DeleteAsync(accessId);
+      return NoContent();
     }
   }
 }
