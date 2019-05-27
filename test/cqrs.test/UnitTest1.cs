@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace UnitTestProject1
 {
@@ -30,13 +31,18 @@ namespace UnitTestProject1
     [TestMethod]
     public void AssertLotsOfCreatedWithDifferentIdsMessageSucceed()
     {
+      ThreadPool.GetMaxThreads(out var workerThreads, out var completionThreads);
+      Console.WriteLine($"w:{workerThreads}-c:{completionThreads}");
+      ThreadPool.GetAvailableThreads(out var workerThreads2, out var completionThreads2);
+      Console.WriteLine($"w:{workerThreads2}-c:{completionThreads2}");
+
       TestSettings.EntityRepository.Clear();
       TestSettings.CommandBus.Initialize();
 
       var commandManager = TestSettings.CommandManagerCoordinator;
       commandManager.Start();
 
-      var nbCreate = 20;
+      var nbCreate = 100;
 
       var ids = new List<int>();
       for (var i = 0; i < nbCreate; i++)
