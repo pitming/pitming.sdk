@@ -4,19 +4,18 @@ using grpc = global::Grpc.Core;
 namespace grpcLib
 {
 
-  public static partial class ServicePmi<TCommand> where TCommand : class, IMessage<TCommand>, new()
+  public static partial class ServicePmi<TCommand, TResponse>
+    where TCommand : class, IMessage<TCommand>, new()
+    where TResponse : class, IMessage<TResponse>, new()
   {
     static readonly string __ServiceName = "ServicePmi";
 
     static readonly grpc::Marshaller<TCommand> __Marshaller_Service1Command = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg),
-      x => new MessageParser<TCommand>(() => new TCommand()).ParseFrom(x)
+      x => new MessageParser<TCommand>(() => new TCommand()).ParseFrom(x));
+    static readonly grpc::Marshaller<TResponse> __Marshaller_Service1Response = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg),
+       x => new MessageParser<TResponse>(() => new TResponse()).ParseFrom(x));
 
-
-      /*global::Service1Command.Parser.ParseFrom*/);
-    static readonly grpc::Marshaller<global::Service1Response> __Marshaller_Service1Response = grpc::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg),
-      global::Service1Response.Parser.ParseFrom);
-
-    static readonly grpc::Method<TCommand, global::Service1Response> __Method_Send = new grpc::Method<TCommand, global::Service1Response>(
+    static readonly grpc::Method<TCommand, TResponse> __Method_Send = new grpc::Method<TCommand, TResponse>(
         grpc::MethodType.Unary,
         __ServiceName,
         "Send",
@@ -31,9 +30,9 @@ namespace grpcLib
 
     /// <summary>Base class for server-side implementations of Service1</summary>
     [grpc::BindServiceMethod(typeof(Service1), "BindService")]
-    public abstract partial class Service1Base
+    public abstract partial class ServicePmiBase
     {
-      public virtual global::System.Threading.Tasks.Task<global::Service1Response> Send(TCommand request, grpc::ServerCallContext context)
+      public virtual global::System.Threading.Tasks.Task<TResponse> Send(TCommand request, grpc::ServerCallContext context)
       {
         throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
       }
@@ -42,7 +41,7 @@ namespace grpcLib
 
     /// <summary>Creates service definition that can be registered with a server</summary>
     /// <param name="serviceImpl">An object implementing the server-side handling logic.</param>
-    public static grpc::ServerServiceDefinition BindService(Service1Base serviceImpl)
+    public static grpc::ServerServiceDefinition BindService(ServicePmiBase serviceImpl)
     {
       return grpc::ServerServiceDefinition.CreateBuilder()
           .AddMethod(__Method_Send, serviceImpl.Send).Build();
@@ -52,9 +51,9 @@ namespace grpcLib
     /// Note: this method is part of an experimental API that can change or be removed without any prior notice.</summary>
     /// <param name="serviceBinder">Service methods will be bound by calling <c>AddMethod</c> on this object.</param>
     /// <param name="serviceImpl">An object implementing the server-side handling logic.</param>
-    public static void BindService(grpc::ServiceBinderBase serviceBinder, Service1Base serviceImpl)
+    public static void BindService(grpc::ServiceBinderBase serviceBinder, ServicePmiBase serviceImpl)
     {
-      serviceBinder.AddMethod(__Method_Send, serviceImpl == null ? null : new grpc::UnaryServerMethod<TCommand, global::Service1Response>(serviceImpl.Send));
+      serviceBinder.AddMethod(__Method_Send, serviceImpl == null ? null : new grpc::UnaryServerMethod<TCommand, TResponse>(serviceImpl.Send));
     }
 
   }
