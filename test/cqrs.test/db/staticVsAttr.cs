@@ -37,19 +37,19 @@ namespace cqrs.test
 
     public void CheckVersion(Type storeType, Type itemType)
     {
-      if (_checkByTypes.AddOrUpdate(storeType, new ConcurrentDictionary<Type, int>(), (_, val) => val + 1) == 1)
-      {
-        Console.WriteLine("Doing the check");
-        var versionField = itemType.GetField("Version");
-        if (versionField != null)
-        {
-          var itemVersionValue = versionField.GetValue(null) as string;
-          if (Version != itemVersionValue)
-          {
-            throw new StoreItemVersionException(Version, itemVersionValue);
-          }
-        }
-      }
+      //if (_checkByTypes.AddOrUpdate(storeType, new ConcurrentDictionary<Type, int>(), (_, val) => val + 1) == 1)
+      //{
+      //  Console.WriteLine("Doing the check");
+      //  var versionField = itemType.GetField("Version");
+      //  if (versionField != null)
+      //  {
+      //    var itemVersionValue = versionField.GetValue(null) as string;
+      //    if (Version != itemVersionValue)
+      //    {
+      //      throw new StoreItemVersionException(Version, itemVersionValue);
+      //    }
+      //  }
+      //}
     }
 
     public string Version { get; }
