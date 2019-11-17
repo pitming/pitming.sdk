@@ -1,0 +1,25 @@
+﻿syntax = "proto3";
+
+service Service1 {
+  rpc Send (Service1Command) returns (Service1Response);
+}
+
+message Service1Command {
+  string name = 1;
+}
+
+message Service1Response{
+  string message = 1;
+}
+
+service Service2 {
+  rpc Send (Service2Command) returns (Service2Response);
+}
+
+message Service2Command {
+  string name = 1;
+}
+
+message Service2Response{
+  string message = 1;
+}

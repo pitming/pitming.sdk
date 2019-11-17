@@ -28,20 +28,20 @@ namespace grpcLib
       get { return global::GreetReflection.Descriptor.Services[0]; }
     }
 
-    /// <summary>Base class for server-side implementations of Service1</summary>
-    [grpc::BindServiceMethod(typeof(Service1), "BindService")]
-    public abstract partial class ServicePmiBase
-    {
-      public virtual global::System.Threading.Tasks.Task<TResponse> Send(TCommand request, grpc::ServerCallContext context)
-      {
-        throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
-      }
+    ///// <summary>Base class for server-side implementations of Service1</summary>
+    //[grpc::BindServiceMethod(typeof(ServicePmi), "BindService")]
+    //public abstract partial class ServicePmiBase
+    //{
+    //  public virtual global::System.Threading.Tasks.Task<TResponse> Send(TCommand request, grpc::ServerCallContext context)
+    //  {
+    //    throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
+    //  }
 
-    }
+    //}
 
     /// <summary>Creates service definition that can be registered with a server</summary>
     /// <param name="serviceImpl">An object implementing the server-side handling logic.</param>
-    public static grpc::ServerServiceDefinition BindService(ServicePmiBase serviceImpl)
+    public static grpc::ServerServiceDefinition BindService(IGenericSendHandler<TCommand, TResponse> serviceImpl)
     {
       return grpc::ServerServiceDefinition.CreateBuilder()
           .AddMethod(__Method_Send, serviceImpl.Send).Build();
@@ -51,7 +51,7 @@ namespace grpcLib
     /// Note: this method is part of an experimental API that can change or be removed without any prior notice.</summary>
     /// <param name="serviceBinder">Service methods will be bound by calling <c>AddMethod</c> on this object.</param>
     /// <param name="serviceImpl">An object implementing the server-side handling logic.</param>
-    public static void BindService(grpc::ServiceBinderBase serviceBinder, ServicePmiBase serviceImpl)
+    public static void BindService(grpc::ServiceBinderBase serviceBinder, IGenericSendHandler<TCommand, TResponse> serviceImpl)
     {
       serviceBinder.AddMethod(__Method_Send, serviceImpl == null ? null : new grpc::UnaryServerMethod<TCommand, TResponse>(serviceImpl.Send));
     }
